@@ -11,3 +11,10 @@ lang_choice = (
                     (7, 'German'),
                     
                 )
+
+gender_choice = (
+                    ('','---SELECT---'),
+                    (1, 'Male'),
+                    (2, 'Female'),
+                    
+                )

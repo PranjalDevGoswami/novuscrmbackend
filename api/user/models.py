@@ -2,7 +2,8 @@ from django.db import models
 
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
-from novuscrm.api.user.choice import lang_choice
+from api.user.choice import lang_choice,gender_choice
+from .managers import CustomUserManager
 # Create your models here.
 
 
@@ -20,7 +21,7 @@ class Country(models.Model):
 
 # Language model
 class Lang(models.Model):
-    lang_type = models.CharField(choices=lang_choice)
+    lang_type = models.CharField(choices=lang_choice,max_length=100)
     country_id = models.ForeignKey(Country, on_delete=models.CASCADE, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -31,7 +32,7 @@ class Lang(models.Model):
     
 
 
-# company model
+# Company model
 class Company(models.Model):
     name = models.CharField(max_length=150)
     entity_id = models.CharField(max_length=50)
@@ -44,8 +45,33 @@ class Company(models.Model):
     
     def __str__(self):
         return self.name
+
+# Company Deal  
+class CompanyDeal(models.Model):
+    name = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    close_date = models.DateField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return self.name
     
+# Company task
+class CompanyTask(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    due_date = models.DateField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    company_deal = models.ForeignKey(CompanyDeal, on_delete=models.CASCADE, null=True, blank=True)
+    is_completed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title
 
 
 # RoleMaster model
@@ -55,10 +81,25 @@ class RoleMaster(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return self.name
+    
+    
+
+# Department model
+class Department(models.Model):
+    name = models.CharField(max_length=50)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
+    
 
 
-# RoleAssignment model
-class RoleAssignment(models.Model):
+# RolePermission model
+class RolePermission(models.Model):
     is_edit = models.BooleanField(default=False)
     is_view = models.BooleanField(default=False)
     is_create = models.BooleanField(default=False)
@@ -67,31 +108,29 @@ class RoleAssignment(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
         
-    
-
-
-
 
 # CustomUser model
 class CustomUser(AbstractUser):
-    name = models.CharField(max_length=50, default='Anonymous')
     email = models.EmailField(max_length=100, unique=True) 
-    username = None  
+    username = models.CharField(max_length=150, blank=True, null=True, default='Anonymous')
     phone = models.CharField(max_length=20, blank=True, null=True)
-    gender = models.CharField(max_length=20, null=True, blank=True)
+    gender = models.CharField(choices=gender_choice,max_length=20, null=True, blank=True)
     company = models.ForeignKey(Company , on_delete=models.CASCADE, null=True, blank=True)
     user_role = models.ForeignKey(RoleMaster, on_delete=models.CASCADE, null=True, blank=True)
+    user_department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
+    user_permission = models.ForeignKey(RolePermission, on_delete=models.CASCADE, null=True, blank=True)
+    user_company_task = models.ForeignKey(CompanyTask, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
+    
+    objects = CustomUserManager()
     
     def __str__(self):
         return self.email
     
-
-
 
 # ZoneMaster model
 class ZoneMaster(models.Model):
@@ -104,9 +143,6 @@ class ZoneMaster(models.Model):
     def __str__(self):
         return self.name
     
-    
-
-
 
 # RegionMaster model
 class RegionMaster(models.Model):
@@ -146,5 +182,8 @@ class CityMaster(models.Model):
     def __str__(self):
         return self.name
     
+
+
+
 
 
