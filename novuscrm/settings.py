@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'api',
     'api.user',
     'api.project',
+    'api.operation',
+    'api.finance',
     'drf_yasg',
     'dj_rest_auth',
     'allauth',
