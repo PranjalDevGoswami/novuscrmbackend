@@ -1,0 +1,49 @@
+# Ignore Python cache files
+**/__pycache__/*
+
+# Ignore migration cache files
+**/migrations/__pycache__/*
+
+# Ignore .env files
+.env
+.env.save
+
+# Ignore Visual Studio Code settings
+.vscode/
+
+# Ignore shell script
+bash.sh
+
+# Ignore log files
+*.log
+
+# Ignore gettext files
+*.pot
+
+# Ignore compiled Python files
+*.pyc
+# Django #
+
+
+
+# /api/__pycache__/*
+# /api/migrations/__pycache__/*
+# /api/user/__pycache__/*
+# /api/user/migrations/__pycache__/*
+# /novuscrm/__pycache__/*
+*.yml
+.env
+.env.save
+.vscode/
+/bash.sh
+*.log
+*.pot
+*.pyc
+# static/*
+# /static/*
+
+
+
+
+
+
