@@ -1,10 +1,8 @@
-from django.db import models
-
 # Create your models here.
+from django.db import models
 from django.contrib.auth.models import AbstractUser
 from api.user.choice import lang_choice,gender_choice
 from .managers import CustomUserManager
-# Create your models here.
 
 
 # Country model
@@ -108,8 +106,6 @@ class RolePermission(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
         
-
-# CustomUser model
 class CustomUser(AbstractUser):
     email = models.EmailField(max_length=100, unique=True) 
     username = models.CharField(max_length=150, blank=True, null=True, default='Anonymous')
@@ -123,6 +119,9 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    password_reset_token = models.CharField(max_length=100, blank=True, null=True)
+    password_reset_token_expiration = models.DateTimeField(blank=True, null=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
     
@@ -130,6 +129,7 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return self.email
+
     
 
 # ZoneMaster model

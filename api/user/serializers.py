@@ -6,6 +6,11 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate,get_user_model,password_validation
 from django.contrib.auth.hashers import check_password,make_password
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, smart_str
+from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils import timezone
 
 
 class CustomUserSerializer(serializers.ModelSerializer):
@@ -33,8 +38,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
         # Hash the password before saving it to the database
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
-
-    
 
 
 class UserLoginSerializer(serializers.ModelSerializer):
@@ -96,7 +99,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         return data
 
 
-class ResetPasswordSerializer(serializers.Serializer):
+class SendPasswordResetEmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255, min_length=3)
     
     def validate_email(self, value):
@@ -104,6 +107,38 @@ class ResetPasswordSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError("User with this email does not exist.")
         return value
+
+
+class UserPasswordResetSerializer(serializers.Serializer):
+    password = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
+    password2 = serializers.CharField(max_length=255, style={'input_type': 'password'}, write_only=True)
+
+    def validate(self, attrs):
+        error_msg = "Passwords do not match."
+        if attrs['password'] != attrs['password2']:
+            raise serializers.ValidationError(error_msg)
+        return attrs
+
+    def reset_password(self, uid, token):
+        try:
+            uid_str = smart_str(urlsafe_base64_decode(uid))
+            user = CustomUser.objects.get(id=uid_str)
+
+            # Check if token is valid and not expired
+            if user.password_reset_token != token or timezone.now() > user.password_reset_token_expiration:
+                raise serializers.ValidationError('Token is not valid or expired')
+
+            # Set new password
+            user.set_password(self.validated_data['password'])
+            user.save()
+
+            return user
+        except DjangoValidationError:
+            raise serializers.ValidationError('Token is not valid or expired')
+
+
+
+
 
 
 
