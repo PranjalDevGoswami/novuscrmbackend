@@ -1,13 +1,67 @@
 from rest_framework import serializers, generics, viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser, Department
+from .models import *
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate,get_user_model,password_validation
 from django.contrib.auth.hashers import check_password,make_password
 
 
+
+
+#Country Serializer Class
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = ['name','sub_branch','is_active']
+
+
+#Language Serializer Class
+class LngSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lang
+        fields = ['lang_type', 'country_id', 'is_active']        
+        
+# Company Serializer Class
+class CompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Company
+        fields = ['name','entity_id','entity_name','address','country_id','is_active']
+
+# RoleMaster Serializer Class
+class RoleMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RoleMaster
+        fields = ['name','is_active']
+        
+ # MenuMaster Serializer Class       
+class MenuSerializer(serializers.ModelSerializer):
+    role_id = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
+    class Meta:
+        model = Menu
+        fields = ['menu_name','page_link','role_id']        
+        
+
+# SubMenu Master Serializer Class        
+class SubMenuSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Submenu
+        fields = ['menu', 'submenu_name','page_link','permissions','is_active']        
+
+
+
+# Department Serializer Class
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['name', 'is_active']
+        
+        
+        
+        
+# CustomUser Serializer Class        
 class CustomUserSerializer(serializers.ModelSerializer):
     user_department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
 
@@ -107,3 +161,37 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 
 
+#ZoneMaster Serializer Class
+
+class ZoneMasterSerializer(serializers.ModelSerializer):
+    zone_cities = serializers.StringRelatedField(many=True)
+    regions = serializers.StringRelatedField(many=True)
+    class Meta:
+        model = ZoneMaster
+        fields = ['name','regions', 'zone_cities','is_active']
+        
+# RegionMaster Serializer Class
+class RegionMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegionMaster
+        fields = ['name','zone_id','is_active']
+        
+# StateMaster Serializer Class
+
+class StateMasterSerializer(serializers.ModelSerializer):
+    zone_id = serializers.StringRelatedField(many=False, read_only=True)
+    region_id = serializers.StringRelatedField(many=False, read_only=True)
+    class Meta:
+        model = StateMaster
+        fields = ['name', 'zone_id','region_id','is_active']
+        
+        
+# CityMaster Serializer Class
+class CityMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CityMaster
+        fields = ['name','region_id','state_id','is_active']
+        
+        
+        
+                

@@ -170,7 +170,7 @@ class ZoneMaster(models.Model):
 # RegionMaster model
 class RegionMaster(models.Model):
     name = models.CharField(max_length=50)
-    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True)
+    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True, related_name="regions")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -182,8 +182,8 @@ class RegionMaster(models.Model):
 # StateMaster model
 class StateMaster(models.Model):
     name = models.CharField(max_length=50)
-    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True)
-    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True)
+    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='zone_states')
+    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='region_states')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -195,9 +195,9 @@ class StateMaster(models.Model):
 # CityMaster model
 class CityMaster(models.Model):
     name = models.CharField(max_length=50)
-    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True)
-    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True)
-    state_id = models.ForeignKey(StateMaster, on_delete=models.CASCADE, null=True,blank=True)
+    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='zone_cities')
+    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True,related_name='region_cities')
+    state_id = models.ForeignKey(StateMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='state_cities')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
