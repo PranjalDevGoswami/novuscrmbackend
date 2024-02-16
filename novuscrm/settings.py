@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-6c!mbmafp5w3&(cykg*#z)67&a*a**@d4b@y!eyuub4oqq5cti
 DEBUG = True
 
 ALLOWED_HOSTS = []
-AUTH_USER_MODEL = 'user.CustomUser'
+
 
 
 # Application definition
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -66,7 +67,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'novuscrm.urls'
-
+CORS_ORIGIN_ALLOW_ALL = True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -84,7 +85,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'novuscrm.wsgi.application'
-
+AUTH_USER_MODEL = 'user.CustomUser'
+SESSION_COOKIE_SECURE = True
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

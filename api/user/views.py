@@ -181,3 +181,9 @@ class CityViewSet(viewsets.ModelViewSet):
     queryset = CityMaster.objects.all()
     serializer_class = CityMasterSerializer
     permission_classes = (permissions.AllowAny,)    
+    
+    
+class DepartmentViewSet(viewsets.ModelViewSet):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+    permission_classes = (permissions.AllowAny,)    

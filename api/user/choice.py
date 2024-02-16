@@ -14,7 +14,7 @@ lang_choice = (
 
 gender_choice = (
                     ('','---SELECT---'),
-                    (1, 'Male'),
-                    (2, 'Female'),
+                    ('Male', 'Male'),
+                    ('Female', 'Female'),
                     
                 )

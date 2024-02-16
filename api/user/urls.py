@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework.urlpatterns import format_suffix_patterns
-from .views import UserRegistrationViewSet, UserLoginViewSet,ChangePasswordViewSet,ResetPasswordViewSet, CityViewSet, ZoneViewSet, RegionViewSet
+from .views import UserRegistrationViewSet, UserLoginViewSet,ChangePasswordViewSet,ResetPasswordViewSet, CityViewSet, ZoneViewSet, RegionViewSet,DepartmentViewSet
 from api.user import views
 
 
@@ -10,6 +10,7 @@ router.register(r'register', UserRegistrationViewSet, basename='user-registratio
 router.register(r'zone', ZoneViewSet,basename='zone')
 router.register(r'region', RegionViewSet,basename='region')
 router.register(r'city', CityViewSet,basename='city')
+router.register(r'department', DepartmentViewSet, basename='department')
 
 
 

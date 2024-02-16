@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate,get_user_model,password_validation
 from django.contrib.auth.hashers import check_password,make_password
-
+from django.contrib.auth import get_user_model
 
 
 
@@ -103,6 +103,8 @@ class UserLoginSerializer(serializers.ModelSerializer):
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
+        print(email)
+        print(password)
        
         # Check if user with this email exists
         user = CustomUser.objects.filter(email=email).first()
@@ -193,5 +195,11 @@ class CityMasterSerializer(serializers.ModelSerializer):
         fields = ['name','region_id','state_id','is_active']
         
         
-        
-                
+
+# Department Serializer class
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = ['name', 'is_active']
+                                
