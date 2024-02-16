@@ -26,6 +26,7 @@ class CustomProjectManager(models.Manager):
 # Client Master Table
 class Client(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    email = models.CharField(max_length=100,null=True,blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -46,13 +47,25 @@ class FeeMaster(models.Model):
     def __str__(self):
         return self.fee_type
     
+# ProjectManager Model table
+class ProjectManager(models.Model):
+    name = models.CharField(max_length=255,null=True,blank=True)
+    is_active = models.BooleanField(default=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
     
 
 
 # Project/Sales model
 class Project(models.Model):
     project_id = models.CharField(max_length=100, null=True, blank=True)
-    user_project_id = models.CharField(max_length=50,null=True, blank=True)
+    user_id = models.IntegerField(null=True, blank=True)
+    user_email = models.EmailField(max_length=255,null=True,blank=True)
+    project_manager = models.ForeignKey(ProjectManager,on_delete=models.CASCADE,null=True,blank=True,related_name="projects_manager")
+    project_code = models.CharField(max_length=50,null=True,blank=True)
     name = models.CharField(max_length=50)
     project_type = models.CharField(choices=project_choice,max_length=100, null=True, blank=True)
     sample = models.CharField(max_length=50,null=True, blank=True)
@@ -64,8 +77,8 @@ class Project(models.Model):
     operation_select = models.BooleanField(default=False)
     finance_team = models.ForeignKey(financeTeam, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects_as_finance_team')
     finance_select = models.BooleanField(default=False)
-    tentative_start_date = models.DateTimeField()
-    tentative_end_date = models.DateTimeField()
+    tentative_start_date = models.DateTimeField(null=True,blank=True)
+    tentative_end_date = models.DateTimeField(null=True,blank=True)
     estimated_time = models.DurationField(null=True, blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

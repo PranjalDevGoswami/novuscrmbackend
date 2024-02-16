@@ -40,7 +40,7 @@ class MenuSerializer(serializers.ModelSerializer):
     role_id = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail', read_only=True)
     class Meta:
         model = Menu
-        fields = ['menu_name','page_link','role_id']        
+        fields = ['menu_name','page_link','role_id','is_active']        
         
 
 # SubMenu Master Serializer Class        

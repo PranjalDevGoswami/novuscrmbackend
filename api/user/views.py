@@ -52,6 +52,8 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         # Call create method to save the user with hashed password
+        ''' perform create method is used to add extra information when creating a new object. 
+        perform_create() method will not execute if you override create() method.'''
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
