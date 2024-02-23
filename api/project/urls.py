@@ -10,4 +10,5 @@ router.register(r'track',ProjectTrackingViewSet, basename="track")
 urlpatterns = [
     path('', include(router.urls)),
     path('project_code/CBR/', ProjectCBRViewSet.as_view({'post': 'create'}), name='project-cbr'),
+    path('projects/<str:project_code>/CBR/<str:action>/', ProjectCBRViewSet.as_view({'get': 'handle_action'}), name='project-cbr-action'),
 ]

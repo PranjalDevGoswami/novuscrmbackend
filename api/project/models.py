@@ -27,6 +27,11 @@ class CustomProjectManager(models.Manager):
 class Client(models.Model):
     name = models.CharField(max_length=100, unique=True)
     email = models.CharField(max_length=100,null=True,blank=True)
+    client_purchase_order_no = models.CharField(max_length=100,null=True,blank=True)
+    email_id_for_cc = models.CharField(max_length=100,null=True,blank=True)
+    additional_survey = models.CharField(max_length=100,null=True,blank=True)
+    total_survey_to_be_billed_to_client = models.CharField(max_length=100,null=True,blank=True)
+    other_specific_billing_instruction = models.CharField(max_length=255,null=True,blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -57,6 +62,16 @@ class ProjectManager(models.Model):
     def __str__(self):
         return self.name
     
+# SalesOwner Model table
+class SalesOwner(models.Model):
+    name = models.CharField(max_length=255,null=True,blank=True)
+    is_active = models.BooleanField(default=True)  
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
+    
 
 
 # Project/Sales model
@@ -65,6 +80,7 @@ class Project(models.Model):
     user_id = models.IntegerField(null=True, blank=True)
     user_email = models.EmailField(max_length=255,null=True,blank=True)
     project_manager = models.ForeignKey(ProjectManager,on_delete=models.CASCADE,null=True,blank=True,related_name="projects_manager")
+    sales_owner = models.ForeignKey(SalesOwner,on_delete=models.CASCADE,null=True,blank=True,related_name="sales_owner")
     project_code = models.CharField(max_length=50,null=True,blank=True)
     name = models.CharField(max_length=50)
     project_type = models.CharField(choices=project_choice,max_length=100, null=True, blank=True)
@@ -80,6 +96,8 @@ class Project(models.Model):
     tentative_start_date = models.DateTimeField(null=True,blank=True)
     tentative_end_date = models.DateTimeField(null=True,blank=True)
     estimated_time = models.DurationField(null=True, blank=True)
+    status = models.CharField(max_length=255,null=True,blank=True)
+    remark = models.CharField(max_length=255,null=True,blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -59,15 +59,15 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ['name', 'is_active']
         
         
-        
-        
-# CustomUser Serializer Class        
+
 class CustomUserSerializer(serializers.ModelSerializer):
     user_department = serializers.PrimaryKeyRelatedField(queryset=Department.objects.all())
+    password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = CustomUser
-        fields = ['username', 'email', 'password', 'phone', 'gender', 'user_department']
+        fields = ['username', 'email', 'password', 'confirm_password', 'phone', 'gender', 'user_department']
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_email(self, value):
@@ -76,18 +76,19 @@ class CustomUserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This email address is already in use.")
         return value
 
-    def validate_password(self, value):
+    def validate(self, data):
+        if data['password'] != data.pop('confirm_password'):
+            raise serializers.ValidationError("Passwords do not match.")
         try:
-            validate_password(value)
+            validate_password(data['password'])
         except ValidationError as e:
             raise serializers.ValidationError(str(e))
-        return value
+        return data
 
     def create(self, validated_data):
         # Hash the password before saving it to the database
         validated_data['password'] = make_password(validated_data['password'])
         return super().create(validated_data)
-
     
 
 

@@ -41,6 +41,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class CBRSendToClientSerializer(serializers.ModelSerializer):
     project_code = serializers.CharField(max_length=50, write_only=True, required=True)
+    
     class Meta:
         model = Project
         fields = ['project_code','is_active']
