@@ -5,9 +5,9 @@ from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from .models import CustomUser, Department
+from .models import *
 from rest_framework.authtoken.models import Token
-from .serializers import CustomUserSerializer, UserLoginSerializer,ChangePasswordSerializer,ResetPasswordSerializer
+from .serializers import *
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
@@ -18,8 +18,27 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib.auth.models import update_last_login
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'snippets': reverse('snippet-list', request=request, format=format)
+    })
+
+
+#Country ViewSet
+class CountryViewSet(viewsets.ModelViewSet):
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer
+    permission_classes = (permissions.AllowAny,)
     
+
+# User RegistrationViewset    
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
@@ -28,8 +47,8 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        # Call create method to save the user with hashed password
+        ''' perform create method is used to add extra information when creating a new object. 
+        perform_create() method will not execute if you override create() method.'''
         self.perform_create(serializer)
 
         headers = self.get_success_headers(serializer.data)
@@ -123,3 +142,39 @@ class ResetPasswordViewSet(viewsets.ViewSet):
 
         return Response({'detail': 'Password reset link sent successfully.'}, status=status.HTTP_200_OK)
 
+
+
+
+
+# class CityList(APIView):
+#     def get(self, request, format=None):
+#         cites = CityMaster.objects.all()
+#         serializer = CityMasterSerializer(cites, many=False)
+#         return Response(serializer.data)
+
+#     def post(self, request, format=None):
+#         serializer = CityMasterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+
+class ZoneViewSet(viewsets.ModelViewSet):
+    queryset = ZoneMaster.objects.all()
+    serializer_class = ZoneMasterSerializer
+    permission_classes = (permissions.AllowAny,)  
+    
+
+
+class RegionViewSet(viewsets.ModelViewSet):
+    queryset = RegionMaster.objects.all()
+    serializer_class = RegionMasterSerializer
+    permission_classes = (permissions.AllowAny,)      
+    
+    
+class CityViewSet(viewsets.ModelViewSet):
+    queryset = CityMaster.objects.all()
+    serializer_class = CityMasterSerializer
+    permission_classes = (permissions.AllowAny,)    

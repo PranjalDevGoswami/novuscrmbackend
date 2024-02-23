@@ -5,7 +5,8 @@ from django.contrib.auth.models import AbstractUser
 from api.user.choice import lang_choice,gender_choice
 from .managers import CustomUserManager
 # Create your models here.
-
+# from api.finance import financeTeam
+# from api.operation import operationTeam
 
 # Country model
 class Country(models.Model):
@@ -85,6 +86,27 @@ class RoleMaster(models.Model):
         return self.name
     
     
+    
+# Menu Master Table    
+class Menu(models.Model):
+    menu_name = models.CharField(max_length=255)
+    page_link = models.CharField(max_length=255)
+    role = models.ForeignKey(RoleMaster, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+# SubMenu Master table
+class Submenu(models.Model):
+    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
+    submenu_name = models.CharField(max_length=255)
+    page_link = models.CharField(max_length=255)
+    permissions = models.ManyToManyField("auth.Permission")   
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+    
+    
 
 # Department model
 class Department(models.Model):
@@ -106,7 +128,8 @@ class RolePermission(models.Model):
     is_delete = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
+ 
         
 
 # CustomUser model
@@ -147,7 +170,7 @@ class ZoneMaster(models.Model):
 # RegionMaster model
 class RegionMaster(models.Model):
     name = models.CharField(max_length=50)
-    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True)
+    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True, related_name="regions")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -159,8 +182,8 @@ class RegionMaster(models.Model):
 # StateMaster model
 class StateMaster(models.Model):
     name = models.CharField(max_length=50)
-    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True)
-    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True)
+    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='zone_states')
+    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='region_states')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -172,9 +195,9 @@ class StateMaster(models.Model):
 # CityMaster model
 class CityMaster(models.Model):
     name = models.CharField(max_length=50)
-    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True)
-    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True)
-    state_id = models.ForeignKey(StateMaster, on_delete=models.CASCADE, null=True,blank=True)
+    zone_id = models.ForeignKey(ZoneMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='zone_cities')
+    region_id = models.ForeignKey(RegionMaster, on_delete=models.CASCADE, null=True,blank=True,related_name='region_cities')
+    state_id = models.ForeignKey(StateMaster, on_delete=models.CASCADE, null=True,blank=True, related_name='state_cities')
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -183,7 +206,20 @@ class CityMaster(models.Model):
         return self.name
     
 
+# ROle Assignment Model
+# class RoleAssignment(models.Model):
+#     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True)
+#     roles = models.ForeignKey(RoleMaster, on_delete=models.CASCADE,null=True, blank=True)
+#     zones = models.ManyToManyField(ZoneMaster, null=True, blank=True)
+#     regions = models.ManyToManyField(RegionMaster, null=True, blank=True)
+#     states = models.ManyToManyField(StateMaster, null=True, blank=True)
+#     city = models.ManyToManyField(StateMaster, null=True, blank=True) 
+#     is_create = models.BooleanField(default=False)
+#     is_edit = models.BooleanField(default=False)
+#     is_view = models.BooleanField(default=False)
+#     created_on = models.DateTimeField(auto_now=True)
+#     updated_on = models.DateTimeField(auto_now_add=True)
 
-
-
-
+#     def __str__(self):
+#         return self.user.username
+    
