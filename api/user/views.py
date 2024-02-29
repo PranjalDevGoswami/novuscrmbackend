@@ -4,15 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework.response import Response
-from django.http import JsonResponse
 from rest_framework import status
 from .models import *
 from rest_framework.authtoken.models import Token
 from .serializers import *
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth import get_user_model
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import login, logout
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -41,9 +38,6 @@ class CountryViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     
 
-    
-    
-
 # User RegistrationViewset    
 class UserRegistrationViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
@@ -53,8 +47,6 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        # Call create method to save the user with hashed password
         ''' perform create method is used to add extra information when creating a new object. 
         perform_create() method will not execute if you override create() method.'''
         self.perform_create(serializer)
@@ -64,24 +56,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
     
     
 
-class UserLists(APIView):
-    permission_classes = (permissions.AllowAny,)
-    serializer_class = UserSerializers
-    queryset = CustomUser.objects.all()
-    
-    @swagger_auto_schema(
-        operation_description="Return a list of all users.",
-        responses={200: UserSerializers(many=True)},
-        )
-    def get(self, request, format=None):
-        """
-        Return a list of all users.
-        """
-        users = CustomUser.objects.all()
-        serialized_users = UserSerializers(users, many=True).data
-        return JsonResponse({'users': serialized_users}, safe=False)
-    
-    
+
 class UserLoginViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.AllowAny,)
     serializer_class = UserLoginSerializer
@@ -96,21 +71,8 @@ class UserLoginViewSet(viewsets.ModelViewSet):
         token, created = Token.objects.get_or_create(user=user)
 
         return Response({'token': token.key,'success': "Login successfully."})
+  
 
-@csrf_exempt
-def signOut(request, id):
-    logout(request)
-    UserModel = get_user_model()
-    
-    try:
-        user = CustomUser.objects.get(pk=id)
-        print(user)
-        user.session_token="0"
-        user.save()
-    except UserModel.DoesNotExist:
-        return JsonResponse({"error":"Invalid User ID"}) 
-    
-    return JsonResponse({"success":"Logout success"})   
 
 
 class ChangePasswordViewSet(viewsets.GenericViewSet):

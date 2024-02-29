@@ -27,17 +27,19 @@ class ProjectSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Tentative end date cannot be in the past.")
         
         return super().create(validated_data)
-    
-    
+
+    # operation_team = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name="operation-detail")
+    # finance_team = serializers.HyperlinkedRelatedField(many=False,read_only=True,  view_name="finance-detail")
 
     class Meta:
         model = Project
-        fields = ['id','name','user_id','project_type','project_code','user_email','project_manager','sample','cpi','clients','set_up_fee','other_cost','operation_team','currency_symbol','operation_select','finance_team','finance_select','tentative_start_date','tentative_end_date','estimated_time','is_active']
+        fields = ['id','name','user_id','project_type','project_code','user_email','project_manager','sample','cpi','clients','set_up_fee','other_cost','operation_team','operation_select','finance_team','finance_select','tentative_start_date','tentative_end_date','estimated_time','is_active']
 
 
 
 class CBRSendToClientSerializer(serializers.ModelSerializer):
     project_code = serializers.CharField(max_length=50, write_only=True, required=True)
+    
     class Meta:
         model = Project
         fields = ['project_code','is_active']

@@ -1,5 +1,5 @@
 from django.db import models
-from api.operation.models  import operationTeam
+from api.operation.models import operationTeam
 from api.finance.models import financeTeam
 from api.user.models import CustomUser
 from django.core.exceptions import ValidationError
@@ -27,6 +27,11 @@ class CustomProjectManager(models.Manager):
 class Client(models.Model):
     name = models.CharField(max_length=100, unique=True)
     email = models.CharField(max_length=100,null=True,blank=True)
+    client_purchase_order_no = models.CharField(max_length=100,null=True,blank=True)
+    email_id_for_cc = models.CharField(max_length=100,null=True,blank=True)
+    additional_survey = models.CharField(max_length=100,null=True,blank=True)
+    total_survey_to_be_billed_to_client = models.CharField(max_length=100,null=True,blank=True)
+    other_specific_billing_instruction = models.CharField(max_length=255,null=True,blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -57,12 +62,15 @@ class ProjectManager(models.Model):
     def __str__(self):
         return self.name
     
-class projectType(models.Model):
-    name = models.CharField(max_length=50, null=True, blank=True)
+# SalesOwner Model table
+class SalesOwner(models.Model):
+    name = models.CharField(max_length=255,null=True,blank=True)
     is_active = models.BooleanField(default=True)  
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    def __str__(self):
+        return self.name
     
 
 
@@ -72,23 +80,24 @@ class Project(models.Model):
     user_id = models.IntegerField(null=True, blank=True)
     user_email = models.EmailField(max_length=255,null=True,blank=True)
     project_manager = models.ForeignKey(ProjectManager,on_delete=models.CASCADE,null=True,blank=True,related_name="projects_manager")
+    sales_owner = models.ForeignKey(SalesOwner,on_delete=models.CASCADE,null=True,blank=True,related_name="sales_owner")
     project_code = models.CharField(max_length=50,null=True,blank=True)
     name = models.CharField(max_length=50)
-    project_type = models.ForeignKey(projectType, on_delete = models.CASCADE, null=True, blank=True)
+    project_type = models.CharField(choices=project_choice,max_length=100, null=True, blank=True)
     sample = models.CharField(max_length=50,null=True, blank=True)
     clients = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
-    cpi = models.DecimalField(max_digits=20, decimal_places=2, null=True, blank=True)
-    currency_symbol = models.CharField(max_length=50, null=True, blank=True)
+    cpi = models.CharField(max_length=50, null=True, blank=True)
     set_up_fee = models.ForeignKey(FeeMaster, on_delete=models.SET_NULL, null=True, blank=True, related_name="projects_fee")
     other_cost = models.CharField(max_length=50, null=True, blank=True)
     operation_team = models.ForeignKey(operationTeam, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects_as_operation_team')
     operation_select = models.BooleanField(default=False)
     finance_team = models.ForeignKey(financeTeam, on_delete=models.SET_NULL, null=True, blank=True, related_name='projects_as_finance_team')
     finance_select = models.BooleanField(default=False)
-    upload_document = models.FileField(upload_to="File Upload", null=True, blank=True)
     tentative_start_date = models.DateTimeField(null=True,blank=True)
     tentative_end_date = models.DateTimeField(null=True,blank=True)
     estimated_time = models.DurationField(null=True, blank=True)
+    status = models.CharField(max_length=255,null=True,blank=True)
+    remark = models.CharField(max_length=255,null=True,blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -106,9 +115,9 @@ class Project(models.Model):
 class ProjectTracking(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True)
-    date = models.DateField()
-    target_achieve = models.IntegerField()
-    man_day = models.DurationField()
+    start_date = models.DateField(null=True,blank=True)
+    end_date = models.DateField(null=True,blank=True)
+    durations = models.DurationField(null=True,blank=True)
     is_active = models.BooleanField(default=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -5,5 +5,6 @@ urlpatterns = [
     path('', home, name="api.home"),
     path('user/', include("api.user.urls")),
     path('project/', include("api.project.urls")),
+    path('operation/', include("api.operation.urls")),
 
 ]
