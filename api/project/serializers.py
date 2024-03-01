@@ -35,24 +35,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ['id','name','user_id','project_type','project_code','user_email','project_manager','sample','cpi','clients','set_up_fee','other_cost','operation_team','operation_select','finance_team','finance_select','tentative_start_date','tentative_end_date','estimated_time','status','is_active']
 
-
-
-# class CBRSendToClientSerializer(serializers.ModelSerializer):
-#     project_code = serializers.CharField(max_length=50, write_only=True, required=True)
-    
-#     class Meta:
-#         model = Project
-#         fields = ['project_code','is_active']
-
-#     def validate_project_code(self, value):
-#         # Check if the project code exists
-#         try:
-#             Project.objects.get(project_code=value)
-#         except Project.DoesNotExist:
-#             raise serializers.ValidationError("Project with this code does not exist.")
-#         return value
-
-        
         
 class ProjectTrackingSerializer(serializers.ModelSerializer):
     projects = serializers.StringRelatedField(many=True, read_only=True)
