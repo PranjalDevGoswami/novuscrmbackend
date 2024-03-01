@@ -22,6 +22,7 @@ def update_estimated_time_task(self):
                 current_date = timezone.now().date()
                 end_date = project.tentative_end_date.date()
                 days_difference = (end_date - current_date).days
+                print('days_difference',days_difference)
                 project.estimated_time = max(timedelta(days=days_difference), timedelta(0))
                 project.save()
     except Project.DoesNotExist:

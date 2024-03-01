@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from api.operation.models import operationTeam
 from api.user.models import RoleMaster
+from api.project.models import Project
 class OperationTeamSerializer(serializers.ModelSerializer):
     role_id = serializers.PrimaryKeyRelatedField(queryset=RoleMaster.objects.all(), source='role', write_only=True)
 
@@ -27,3 +28,17 @@ class OperationTeamCreateSerializer(serializers.ModelSerializer):
 
 
 
+class CBRSendToClientSerializer(serializers.ModelSerializer):
+    project_code = serializers.CharField(max_length=50, write_only=True, required=True)
+    
+    class Meta:
+        model = Project
+        fields = ['project_code','is_active']
+
+    def validate_project_code(self, value):
+        # Check if the project code exists
+        try:
+            Project.objects.get(project_code=value)
+        except Project.DoesNotExist:
+            raise serializers.ValidationError("Project with this code does not exist.")
+        return value

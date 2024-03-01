@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 from .models import Project, Client, ProjectTracking
-from .serializers import ProjectSerializer, ClientSerializer,ProjectTrackingSerializer,CBRSendToClientSerializer
+from .serializers import ProjectSerializer, ClientSerializer,ProjectTrackingSerializer
+# ,CBRSendToClientSerializer
 from api.finance.models import financeTeam
 from api.operation.models import operationTeam
 from drf_yasg.utils import swagger_auto_schema
@@ -100,67 +101,69 @@ class ProjectViewSet(viewsets.ModelViewSet):
     
 
  
-class ProjectCBRViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
-    serializer_class = CBRSendToClientSerializer
-    permission_classes = (permissions.AllowAny,)
+# class ProjectCBRViewSet(viewsets.ModelViewSet):
+#     queryset = Project.objects.all()
+#     serializer_class = CBRSendToClientSerializer
+#     permission_classes = (permissions.AllowAny,)
 
-    def create(self, request, *args, **kwargs):
-        project_code = request.data.get('project_code')
+#     def create(self, request, *args, **kwargs):
+#         project_code = request.data.get('project_code')
         
-        if project_code is None:
-            return Response({'project_code': ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
+#         if project_code is None:
+#             return Response({'project_code': ['This field is required.']}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Retrieve the project object from the database
-        try:
-            project = Project.objects.filter(project_code=project_code).first()
-        except Project.DoesNotExist:
-            raise NotFound("Project not found.")
+#         # Retrieve the project object from the database
+#         try:
+#             project = Project.objects.filter(project_code=project_code).first()
+#         except Project.DoesNotExist:
+#             raise NotFound("Project not found.")
         
-        # Check if the project status is approved
-        if project.status == 'approved':
-            return Response({'message': 'Project is already approved. CBR cannot be generated.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        project_code = signing.dumps(project_code)
-        clientname = project.clients.name
-        purchase_order = project.clients.client_purchase_order_no
-        emailid_cc = project.clients.email_id_for_cc
-        additional_survey = project.clients.additional_survey
-        billed_client = project.clients.total_survey_to_be_billed_to_client
-        billing_instruction = project.clients.other_specific_billing_instruction
-        projectname = project.name
-        projectcode = project.project_code
-        person_email = project.user_email
-        project_manager = project.project_manager.name
-        
-        
-        # Get client email from project data
-        client_email = project.clients.email
-
-        # Send email to the client
-        subject = 'Project CBR'
-        recipient_list = [client_email]
-        from_email = "ankitkalinga03@outlook.com"  # Replace with your sender email
-        ctx = {
-            'clientname': clientname,
-            'purchase_order' : purchase_order,
-            'emailid_cc' : emailid_cc, 
-            'additional_survey' : additional_survey,
-            'billed_client' : billed_client,
-            'billing_instruction' : billing_instruction,
-            'projectname': projectname,
-            'projectcode' : project_code,
-            'person_email':person_email,
-            'project_manager':project_manager,
-            'project' : project,
+#         # Check if the project status is approved
+#         if project.status == 'completed':
+#             project_code = signing.dumps(project_code)
+#             clientname = project.clients.name
+#             purchase_order = project.clients.client_purchase_order_no
+#             emailid_cc = project.clients.email_id_for_cc
+#             additional_survey = project.clients.additional_survey
+#             billed_client = project.clients.total_survey_to_be_billed_to_client
+#             billing_instruction = project.clients.other_specific_billing_instruction
+#             projectname = project.name
+#             projectcode = project.project_code
+#             person_email = project.user_email
+#             project_manager = project.project_manager.name
             
-        }
+            
+#             # Get client email from project data
+#             client_email = project.clients.email
+
+#             # Send email to the client
+#             subject = 'Project CBR'
+#             recipient_list = [client_email]
+#             from_email = "ankitkalinga03@outlook.com"  # Replace with your sender email
+#             ctx = {
+#                 'clientname': clientname,
+#                 'purchase_order' : purchase_order,
+#                 'emailid_cc' : emailid_cc, 
+#                 'additional_survey' : additional_survey,
+#                 'billed_client' : billed_client,
+#                 'billing_instruction' : billing_instruction,
+#                 'projectname': projectname,
+#                 'projectcode' : project_code,
+#                 'person_email':person_email,
+#                 'project_manager':project_manager,
+#                 'project' : project,
+                
+#             }
+            
+#             msg_html = render_to_string('cbr.html', ctx)
+#             plain_message = strip_tags(msg_html)
+#             send_mail(subject, plain_message, from_email, recipient_list,html_message=msg_html)
+            
+#             return Response({'message': f'Project CBR sent successfully'}, status=status.HTTP_201_CREATED)
         
-        msg_html = render_to_string('cbr.html', ctx)
-        plain_message = strip_tags(msg_html)
-        send_mail(subject, plain_message, from_email, recipient_list,html_message=msg_html)
+#         else:
+#             return Response({'message': 'Please update the project status to completed. Otherwise, CBR cannot be generated.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        return Response({'message': f'Project CBR sent successfully'}, status=status.HTTP_201_CREATED)
     
 
 class ProjectTrackingViewSet(viewsets.ModelViewSet):
