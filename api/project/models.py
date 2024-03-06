@@ -38,6 +38,22 @@ class Client(models.Model):
     
     def __str__(self):
         return self.name
+    
+    
+    
+class projectType(models.Model):
+    name = models.CharField(max_length=50, null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+
+
+
 
 # FeeMaster Model table
 class FeeMaster(models.Model):
@@ -83,7 +99,7 @@ class Project(models.Model):
     sales_owner = models.ForeignKey(SalesOwner,on_delete=models.CASCADE,null=True,blank=True,related_name="sales_owner")
     project_code = models.CharField(max_length=50,null=True,blank=True)
     name = models.CharField(max_length=50)
-    project_type = models.CharField(choices=project_choice,max_length=100, null=True, blank=True)
+    project_type = models.ForeignKey(projectType, on_delete = models.CASCADE, null=True, blank=True)
     sample = models.CharField(max_length=50,null=True, blank=True)
     clients = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True)
     cpi = models.CharField(max_length=50, null=True, blank=True)

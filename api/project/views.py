@@ -5,9 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
-from .models import Project, Client, ProjectTracking
-from .serializers import ProjectSerializer, ClientSerializer,ProjectTrackingSerializer
-# ,CBRSendToClientSerializer
+from .models import *
+from .serializers import *
 from api.finance.models import financeTeam
 from api.operation.models import operationTeam
 from drf_yasg.utils import swagger_auto_schema
@@ -34,6 +33,16 @@ def validate_user_session(id):
     except UserModel.DoesNotExist:
         return False    
     
+
+
+class ProjectTypeListView(APIView):
+     
+    def get(self, request, format=None):
+        projects = projectType.objects.all()
+        serializer = ProjectTypeSerializer(projects, many=True)
+        return Response(serializer.data)
+
+
 
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Project, Client, ProjectTracking
+from .models import Project, Client, ProjectTracking, projectType
 from api.finance.serializers import FinanceTeamSerializer
 from api.operation.serializers import OperationTeamSerializer
 from api.finance.models import financeTeam
@@ -13,6 +13,12 @@ class ClientSerializer(serializers.ModelSerializer):
         model = Client
         fields = ['name','is_active']
 
+
+
+class ProjectTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = projectType
+        fields = ['name','is_active']
 
 
 class ProjectSerializer(serializers.ModelSerializer):
