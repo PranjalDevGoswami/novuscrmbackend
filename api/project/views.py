@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 from .models import Project, Client, ProjectTracking
-from .serializers import ProjectSerializer, ClientSerializer,ProjectTrackingSerializer
+from .serializers import ProjectSerializer, ClientSerializer,ProjectTrackingSerializer,OperationTeamSerializer
 # ,CBRSendToClientSerializer
 from api.finance.models import financeTeam
 from api.operation.models import operationTeam
@@ -23,6 +23,7 @@ from django.template.defaultfilters import linebreaksbr
 from rest_framework import viewsets, permissions, status
 from django.core import signing
 from django.shortcuts import render
+from rest_framework.decorators import action
 
 def validate_user_session(id):
     UserModel = get_user_model()
@@ -94,11 +95,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         self.perform_update(serializer)
         return Response(serializer.data)
     
-    
     @swagger_auto_schema()
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
-    
 
 class ProjectTrackingViewSet(viewsets.ModelViewSet):
     queryset = ProjectTracking.objects.all()
@@ -112,3 +111,6 @@ class ProjectTrackingViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=201, headers=headers)
+
+
+

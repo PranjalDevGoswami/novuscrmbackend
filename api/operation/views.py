@@ -9,12 +9,13 @@ from rest_framework.views import APIView
 from api.project.models import Project  
 from rest_framework.decorators import api_view
 from api.project.serializers import ProjectSerializer  
-from .serializers import OperationTeamCreateSerializer,CBRSendToClientSerializer  
+from .serializers import OperationTeamCreateSerializer,CBRSendToClientSerializer,ProjectPerDaySerializer  
 import datetime
 from django.core import signing
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
+from rest_framework.exceptions import ValidationError
 
 class AllProjectDataAPIView(APIView):
     serializer_class = OperationTeamSerializer
@@ -44,7 +45,7 @@ class OperationTeamCreateAPIView(APIView):
                 project_code = serializer.validated_data['project_code']
                 # Check if the project exists
                 try:
-                    project = Project.objects.get(project_code=project_code)
+                    project = Project.objects.filter(project_code=project_code).first()
 
                 except Project.DoesNotExist:
                     return Response({"error": "Project with specified project code does not exist"}, status=status.HTTP_404_NOT_FOUND)
@@ -76,23 +77,27 @@ class OperationTeamCreateAPIView(APIView):
                     interview_sample_size = project.sample
                     interview_achievement = serializer.validated_data.get('total_achievement')
                     remaining_achievement = int(interview_sample_size) - int(interview_achievement)
-                    Project.objects.filter(project_code=project_code).update(remark="project_start")
+                    if total_working_time and today_working_time and remaining_working_time and interview_sample_size and interview_achievement and remaining_achievement:
+                        Project.objects.filter(project_code=project_code).update(remark="project_start")
                        
                 else:
                     # Get last object remaining time and remaining achievement
                     print('#########################')
-                    last_operation_team = operationTeam.objects.last()
-                    total_working_time = last_operation_team.remaining_time
-                    total_resource = serializer.validated_data.get('man_days')
-                    today_working_time = total_resource * datetime.timedelta(hours=8)
-                    remaining_working_time = total_working_time - today_working_time
-                    interview_sample_size = last_operation_team.remaining_interview
-                    interview_achievement = serializer.validated_data.get('total_achievement')
-                    remaining_achievement = int(interview_sample_size)- int(interview_achievement)
+                    try:
+                        last_operation_team = operationTeam.objects.last()
+                        total_working_time = last_operation_team.remaining_time
+                        total_resource = serializer.validated_data.get('man_days')
+                        today_working_time = total_resource * datetime.timedelta(hours=8)
+                        remaining_working_time = total_working_time - today_working_time
+                        interview_sample_size = last_operation_team.remaining_interview
+                        interview_achievement = serializer.validated_data.get('total_achievement')
+                        remaining_achievement = int(interview_sample_size) - int(interview_achievement)
+                    except Exception as e:
+                        print(f"Please Send Project code and all neccessary fields: {e}")
                     
                 # Create operationTeam instance
                 operation_team = operationTeam.objects.create(
-                    name="operationTeam1",
+                    name=serializer.validated_data.get('name'),
                     role_id=1,
                     project_code=project_code,
                     date=serializer.validated_data.get('date'),
@@ -178,6 +183,29 @@ class ProjectCBRViewSet(viewsets.ModelViewSet):
         
         else:
             return Response({'message': 'Please update the project status to completed. Otherwise, CBR cannot be generated.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OperationTeamListView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = ProjectPerDaySerializer
+
+    @swagger_auto_schema(request_body=ProjectPerDaySerializer)
+    def post(self, request, *args, **kwargs):
+        serializer = ProjectPerDaySerializer(data=request.data)
+        try:
+            if serializer.is_valid():
+                project_code = serializer.validated_data['project_code']
+                print('@@@@@@@@@@@@@@@')
+                if project_code:
+                    operation_teams = operationTeam.objects.filter(project_code=project_code).all()
+                else:
+                    operation_teams = operationTeam.objects.all()
+                serializer = OperationTeamSerializer(operation_teams, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 

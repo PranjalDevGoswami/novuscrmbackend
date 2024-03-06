@@ -23,7 +23,7 @@ class AllFinanceTeamDataAPIView(APIView):
                 finance_team_serializer = FinanceTeamSerializer(finance_team)
                 finance_team_data.append({
                     'finance_team': finance_team_serializer.data,
-                    'projects': self.get_projects(finance_team)  # Fetch associated projects
+                     'project_code': self.get_projects(finance_team) # Fetch associated projects
                 })
             return Response(finance_team_data, status=status.HTTP_200_OK)
         except financeTeam.DoesNotExist:
@@ -41,7 +41,7 @@ class FinanceDashboardAPIView(APIView):
     permission_classes = (permissions.AllowAny,)
     def get(self, request, project_code):
         try:
-            project = Project.objects.get(project_code=project_code)
+            project = Project.objects.filter(project_code=project_code).first()
             serializer = FinanceDashboardSerializer({
                 'project': project,
                 'operation_team': project.operation_team,
