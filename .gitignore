@@ -3,4 +3,5 @@
 /api/user/migrations
 /api/finance/migrations
 /api/operation/migrations
+/novuscrm/__pycache__
 
