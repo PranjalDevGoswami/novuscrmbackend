@@ -1,0 +1,6 @@
+/api/project/migrations
+/api/project/__pycache__
+/api/user/migrations
+/api/finance/migrations
+/api/operation/migrations
+

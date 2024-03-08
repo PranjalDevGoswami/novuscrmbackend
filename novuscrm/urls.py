@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from novuscrm import settings
+from rest_framework_simplejwt import views as jwt_views
+from django.conf.urls.static import static
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView,)
 
 
 
@@ -25,6 +28,12 @@ from novuscrm import settings
 #     path('admin/', admin.site.urls),
 #     path('api/', include('api.urls')),
 # ]
+
+
+urlpatterns = [
+    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+]
 
 
 

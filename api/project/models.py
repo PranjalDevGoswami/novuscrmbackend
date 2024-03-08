@@ -97,7 +97,7 @@ class Project(models.Model):
     user_email = models.EmailField(max_length=255,null=True,blank=True)
     project_manager = models.ForeignKey(ProjectManager,on_delete=models.CASCADE,null=True,blank=True,related_name="projects_manager")
     sales_owner = models.ForeignKey(SalesOwner,on_delete=models.CASCADE,null=True,blank=True,related_name="sales_owner")
-    project_code = models.CharField(max_length=50,null=True,blank=True)
+    project_code = models.CharField(max_length=50,null=True,blank=True, unique=True)
     name = models.CharField(max_length=50)
     project_type = models.ForeignKey(projectType, on_delete = models.CASCADE, null=True, blank=True)
     sample = models.CharField(max_length=50,null=True, blank=True)

@@ -22,7 +22,8 @@ from django.template.defaultfilters import linebreaksbr
 from rest_framework import viewsets, permissions, status
 from django.core import signing
 from django.shortcuts import render
-
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 def validate_user_session(id):
     UserModel = get_user_model()
     try:
@@ -36,7 +37,8 @@ def validate_user_session(id):
 
 
 class ProjectTypeListView(APIView):
-     
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         projects = projectType.objects.all()
         serializer = ProjectTypeSerializer(projects, many=True)
@@ -47,7 +49,8 @@ class ProjectTypeListView(APIView):
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
     @swagger_auto_schema(request_body=ClientSerializer)
     def create(self, request, *args, **kwargs):
@@ -60,7 +63,8 @@ class ClientViewSet(viewsets.ModelViewSet):
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(request_body=ProjectSerializer)
     def create(self, request, *args, **kwargs):
@@ -112,7 +116,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ProjectTrackingViewSet(viewsets.ModelViewSet):
     queryset = ProjectTracking.objects.all()
     serializer_class = ClientSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     
     @swagger_auto_schema(request_body=ClientSerializer)
     def create(self, request, *args, **kwargs):

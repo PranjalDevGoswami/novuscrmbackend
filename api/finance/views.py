@@ -9,11 +9,14 @@ from rest_framework import viewsets, permissions, status
 from django.core import signing
 from .models import financeTeam
 from .serializers import FinanceTeamSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class AllFinanceTeamDataAPIView(APIView):
     serializer_class = FinanceTeamSerializer
-    permission_classes = (permissions.AllowAny,)  # Adjust permissions as needed
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -38,7 +41,8 @@ class AllFinanceTeamDataAPIView(APIView):
 
 class FinanceDashboardAPIView(APIView):
     serializer_class = FinanceDashboardSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request, project_code):
         try:
             project = Project.objects.get(project_code=project_code)

@@ -15,10 +15,13 @@ from django.core import signing
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 class AllProjectDataAPIView(APIView):
     serializer_class = OperationTeamSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request):
         try:
@@ -33,7 +36,8 @@ class AllProjectDataAPIView(APIView):
 # Assuming Project model and operationTeam model are imported
 class OperationTeamCreateAPIView(APIView):
     serializer_class = OperationTeamCreateSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(request_body=OperationTeamCreateSerializer)
     def post(self, request):
@@ -119,7 +123,8 @@ class OperationTeamCreateAPIView(APIView):
 class ProjectCBRViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = CBRSendToClientSerializer
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         project_code = request.data.get('project_code')

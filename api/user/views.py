@@ -22,7 +22,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.tokens import RefreshToken
 
 @api_view(['GET'])
 def api_root(request, format=None):
@@ -58,7 +60,7 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
 
 
 class UserLoginViewSet(viewsets.ModelViewSet):
-    permission_classes = (permissions.AllowAny,)
+    # permission_classes = (IsAuthenticated,)
     serializer_class = UserLoginSerializer
     queryset = CustomUser.objects.all()
 
@@ -67,10 +69,23 @@ class UserLoginViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
 
-        # Creating or updating user token
-        token, created = Token.objects.get_or_create(user=user)
-
-        return Response({'token': token.key,'success': "Login successfully."})
+        if user is None:
+            return Response({
+                'status':400,
+                "message": 'Invalid credentials',
+                'data':serializer.error,
+            })
+            
+        if user.is_active is False:    
+            return Response({
+                'status':400,
+                "message": 'Your account not verified please contact to HR',
+                'data':serializer.error,
+            })
+        
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({'refresh':str(refresh),'access': str(refresh.access_token), 'success': "Login successfully."})
   
 
 
