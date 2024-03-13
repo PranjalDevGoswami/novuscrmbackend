@@ -1,0 +1,10 @@
+/api/project/migrations
+/api/project/__pycache__
+/api/user/migrations
+/api/user/__pycache__
+/api/finance/migrations
+/api/finance/__pycache__
+/api/operation/migrations
+/novuscrm/__pycache__
+/api/__pycache__
+/api/migrations
