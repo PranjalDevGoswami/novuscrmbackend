@@ -111,9 +111,7 @@ class ResetPasswordViewSet(viewsets.ViewSet):
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-        # Generate the reset link
-        # reset_link = f"http://127.0.0.1:8000/api/user/reset-password/{uid}/{token}/"  # Replace with your actual domain
-
+        
         # Render the HTML email content
         ctx = {
             'uid': uid,

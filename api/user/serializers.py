@@ -8,8 +8,6 @@ from django.contrib.auth import authenticate,get_user_model,password_validation
 from django.contrib.auth.hashers import check_password,make_password
 
 
-
-
 #Country Serializer Class
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:

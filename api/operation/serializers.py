@@ -54,7 +54,7 @@ class ProjectPerDaySerializer(serializers.ModelSerializer):
     def validate_project_code(self, value):
         # Check if the project code exists
         try:
-            Project.objects.filter(project_code=value).first()
+            Project.objects.filter(project_code=value).first
         except Project.DoesNotExist:
             raise serializers.ValidationError("Project with this code does not exist.")
         return value

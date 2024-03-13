@@ -33,7 +33,7 @@ class ProjectSerializer(serializers.ModelSerializer):
          
     class Meta:
         model = Project
-        fields = ['id','name','user_id','project_type','project_code','user_email','project_manager','sample','cpi','clients','set_up_fee','other_cost','operation_team','operation_select','finance_team','finance_select','tentative_start_date','tentative_end_date','estimated_time','status','is_active']
+        fields = ['id','name','user_id','project_type','project_code','man_days','total_achievement','remaining_time','remaining_interview','user_email','project_manager','sample','cpi','clients','set_up_fee','other_cost','operation_team','operation_select','finance_team','finance_select','tentative_start_date','tentative_end_date','estimated_time','status','is_active']
 
     # def to_representation(self, instance):
     #     data = super().to_representation(instance)
