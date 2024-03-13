@@ -5,6 +5,7 @@
 /api/finance/migrations
 /api/finance/__pycache__
 /api/operation/migrations
+/api/operation/__pycache__
 /novuscrm/__pycache__
 /api/__pycache__
 /api/migrations
