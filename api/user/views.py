@@ -20,6 +20,7 @@ from django.contrib.auth.models import update_last_login
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.http import JsonResponse
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -56,7 +57,23 @@ class UserRegistrationViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
-    
+class UserLists(APIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = UserSerializers
+    queryset = CustomUser.objects.all()
+
+    @swagger_auto_schema(
+        operation_description="Return a list of all users.",
+        responses={200: UserSerializers(many=True)},
+        )
+    def get(self, request, format=None):
+        """
+        Return a list of all users.
+        """
+        users = CustomUser.objects.all()
+        serialized_users = UserSerializers(users, many=True).data
+        return JsonResponse({'users': serialized_users}, safe=False)
+   
 
 
 class UserLoginViewSet(viewsets.ModelViewSet):

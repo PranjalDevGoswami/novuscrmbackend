@@ -91,6 +91,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
     
 
+class UserSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'user_department', 'gender']
+
 
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255,min_length=3)
