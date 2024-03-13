@@ -154,6 +154,12 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.email
     
+    def save(self, *args, **kwargs):
+        # Ensure password is hashed before saving
+        if self.password:
+            self.set_password(self.password)
+        super().save(*args, **kwargs)
+    
 
 # ZoneMaster model
 class ZoneMaster(models.Model):
